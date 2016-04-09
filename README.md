@@ -1,7 +1,7 @@
-File watcher synonym for ElasticSearch
+File heat synonym for ElasticSearch
 ======================================
 
-The file watcher synonym plugin adds a synonym token filter that reloads the synonym file at given intervals (default 60s).
+The file heat synonym plugin adds a synonym token filter that reloads the synonym file at given intervals (default 60s).
 
 Example:
 
@@ -26,14 +26,11 @@ Example:
 	}
 
 ## Installation
-
 Using the plugin command (inside your elasticsearch/bin directory) the plugin can be installed by:
-```
-bin/plugin -install analysis-heat-watcher-synonym  -url https://github.com/lindstromhenrik/elasticsearch-analysis-file-watcher-synonym/releases/download/v0.90.9-0.1.0/elasticsearch-file-watcher-synonym-0.90.9-0.1.0.zip
-```
+
+bin/plugin -install analysis-file-heat-synonym  -url https://github.com/xiaomin0322/project/releases/download/1.0/elasticsearch-file-heat-synonym-0.2.0.zip
 
 ### Compatibility
-
 
 **Note**: Please make sure the plugin version matches with your elasticsearch version. Follow this compatibility matrix
 
