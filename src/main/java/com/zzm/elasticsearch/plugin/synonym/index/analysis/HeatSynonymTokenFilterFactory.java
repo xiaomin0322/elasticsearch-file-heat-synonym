@@ -75,7 +75,7 @@ public class HeatSynonymTokenFilterFactory extends AbstractTokenFilterFactory {
 			final IndicesAnalysisService indicesAnalysisService,
 			final Map<String, TokenizerFactoryFactory> tokenizerFactories,
 			final String name, final Settings settings) {
-		int interval = settings.getAsInt("interval", 10);
+		int interval = settings.getAsInt("interval", 60);
 		// System.out.println("interval=================="+interval);
 		pool.scheduleAtFixedRate(new Runnable() {
 			@Override
