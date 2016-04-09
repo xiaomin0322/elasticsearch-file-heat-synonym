@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.Reader;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -55,6 +56,7 @@ import org.elasticsearch.index.settings.IndexSettings;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 
 @AnalysisSettingsRequired
+@SuppressWarnings("all")
 public class HeatSynonymTokenFilterFactory extends AbstractTokenFilterFactory {
 
 	private SynonymMap synonymMap;
@@ -64,41 +66,45 @@ public class HeatSynonymTokenFilterFactory extends AbstractTokenFilterFactory {
 
 	private HeatSynonymFilter mySynonymFilter;
 
-	private static ScheduledExecutorService pool = Executors
-			.newScheduledThreadPool(1);
+	private List<HeatSynonymFilter> mySynonymFilterAll = new ArrayList<HeatSynonymFilter>();
 
-	@SuppressWarnings("unused")
+	private ScheduledExecutorService pool = Executors.newScheduledThreadPool(1);
+
 	private void initMonitor(final Index index, final Settings indexSettings,
 			final Environment env,
 			final IndicesAnalysisService indicesAnalysisService,
 			final Map<String, TokenizerFactoryFactory> tokenizerFactories,
 			final String name, final Settings settings) {
+		int interval = settings.getAsInt("interval", 10);
+		// System.out.println("interval=================="+interval);
 		pool.scheduleAtFixedRate(new Runnable() {
 			@Override
 			public void run() {
 				try {
 					if (mySynonymFilter != null) {
-						System.out
-								.println("init SynonymTokenFilterFactory................ ");
+						// System.out.println("init SynonymTokenFilterFactory................ ");
 						boolean flag = init(index, indexSettings, env,
 								indicesAnalysisService, tokenizerFactories,
 								name, settings);
 						if (flag) {
-							mySynonymFilter.init(synonymMap, ignoreCase);
+							// System.out.println("mySynonymFilterAll size is "+mySynonymFilterAll.size());
+							for (HeatSynonymFilter heatSynonymFilter : mySynonymFilterAll) {
+								heatSynonymFilter.init(synonymMap, ignoreCase);
+							}
+							// mySynonymFilter.init(synonymMap, ignoreCase);
 						} else {
-							System.out.println("文件没有修改。。。。。。。。。。。。。。。。。。");
+							// System.out.println("文件没有修改。。。。。。。。。。。。。。。。。。");
 						}
 
 					} else {
-						System.out
-								.println("mySynonymFilter is null.................");
+						// System.out.println("mySynonymFilter is null.................");
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 
 			}
-		}, 10, 10, TimeUnit.SECONDS);
+		}, 10, interval, TimeUnit.SECONDS);
 	}
 
 	@Inject
@@ -108,13 +114,11 @@ public class HeatSynonymTokenFilterFactory extends AbstractTokenFilterFactory {
 			Map<String, TokenizerFactoryFactory> tokenizerFactories,
 			@Assisted String name, @Assisted Settings settings) {
 		super(index, indexSettings, name, settings);
-		System.out
-				.println("SynonymTokenFilterFactory init <<<<<<<<<<<<<<<<<<<<<");
+		// System.out.println("SynonymTokenFilterFactory init <<<<<<<<<<<<<<<<<<<<<");
 		boolean flag = init(index, indexSettings, env, indicesAnalysisService,
 				tokenizerFactories, name, settings);
-		System.out
-				.println("SynonymTokenFilterFactory init >>>>>>>>>>>>>>>>>>>>>>"
-						+ flag);
+		// System.out.println("SynonymTokenFilterFactory init >>>>>>>>>>>>>>>>>>>>>>"+
+		// flag);
 		if (flag) {
 			initMonitor(index, indexSettings, env, indicesAnalysisService,
 					tokenizerFactories, name, settings);
@@ -138,7 +142,7 @@ public class HeatSynonymTokenFilterFactory extends AbstractTokenFilterFactory {
 			rulesReader = new FastStringReader(sb.toString());
 		} else if (settings.get("synonyms_path") != null) {
 			String filePath = settings.get("synonyms_path");
-			System.out.println("synonyms_path :" + filePath);
+			// System.out.println("synonyms_path :" + filePath);
 			URL fileUrl = env.resolveConfig(filePath);
 			File file = null;
 			try {
@@ -203,8 +207,8 @@ public class HeatSynonymTokenFilterFactory extends AbstractTokenFilterFactory {
 				((SolrSynonymParser) parser).parse(rulesReader);
 			}
 			synonymMap = parser.build();
-			System.out.println("synonymMap.words.size=="
-					+ synonymMap.words.size());
+			// System.out.println("synonymMap.words.size=="+
+			// synonymMap.words.size());
 		} catch (Exception e) {
 			throw new ElasticsearchIllegalArgumentException(
 					"failed to build synonyms", e);
@@ -215,9 +219,10 @@ public class HeatSynonymTokenFilterFactory extends AbstractTokenFilterFactory {
 	@Override
 	@SuppressWarnings("resource")
 	public TokenStream create(TokenStream tokenStream) {
-		System.out.println("create.............SynonymTokenFilterFactory");
+		// System.out.println("create.............SynonymTokenFilterFactory");
 		mySynonymFilter = new HeatSynonymFilter(tokenStream, synonymMap,
 				ignoreCase);
+		mySynonymFilterAll.add(mySynonymFilter);
 		// fst is null means no synonyms
 		return synonymMap.fst == null ? tokenStream : mySynonymFilter;
 	}
