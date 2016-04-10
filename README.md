@@ -17,7 +17,7 @@ Example:
 	            "filter" : {
 	                "synonym" : {
 	                    "type" : "file_heat_synonym",
-	                    "synonyms_path" : "analysis/synonym.txt"
+	                    "synonyms_path" : "analysis/synonym.txt(支持http://localhost/synonym.txt)"
 	                    "interval" : "10"
 	                }
 	            }
