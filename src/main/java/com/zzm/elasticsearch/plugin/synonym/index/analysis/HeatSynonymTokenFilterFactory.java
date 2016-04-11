@@ -39,6 +39,7 @@ import org.elasticsearch.index.settings.IndexSettings;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 
 @AnalysisSettingsRequired
+@SuppressWarnings("all")
 public class HeatSynonymTokenFilterFactory extends AbstractTokenFilterFactory {
 	private URL synonymFileURL;
 	private static final ScheduledExecutorService threadPool = Executors
@@ -128,26 +129,26 @@ public class HeatSynonymTokenFilterFactory extends AbstractTokenFilterFactory {
 					"file watcher synonym requires `synonyms_path` to be configured");
 		}
 
-		String tokenizerName = settings.get("tokenizer", "whitespace");
-
-		TokenizerFactoryFactory tokenizerFactoryFactory = tokenizerFactories
-				.get(tokenizerName);
-		if (tokenizerFactoryFactory == null) {
-			tokenizerFactoryFactory = indicesAnalysisService
-					.tokenizerFactoryFactory(tokenizerName);
-		}
-		if (tokenizerFactoryFactory == null) {
-			throw new ElasticsearchIllegalArgumentException(
-					"failed to find tokenizer [" + tokenizerName
-							+ "] for synonym token filter");
-		}
-		final TokenizerFactory tokenizerFactory = tokenizerFactoryFactory
-				.create(tokenizerName, settings);
+		/*
+		 * String tokenizerName = settings.get("tokenizer", "whitespace");
+		 * 
+		 * TokenizerFactoryFactory tokenizerFactoryFactory = tokenizerFactories
+		 * .get(tokenizerName); if (tokenizerFactoryFactory == null) {
+		 * tokenizerFactoryFactory = indicesAnalysisService
+		 * .tokenizerFactoryFactory(tokenizerName); } if
+		 * (tokenizerFactoryFactory == null) { throw new
+		 * ElasticsearchIllegalArgumentException( "failed to find tokenizer [" +
+		 * tokenizerName + "] for synonym token filter"); } final
+		 * TokenizerFactory tokenizerFactory =
+		 * tokenizerFactoryFactory.create(tokenizerName, settings);
+		 */
+		final TokenizerFactory tokenizerFactory = null;
 
 		analyzer = new Analyzer() {
 			@Override
 			protected TokenStreamComponents createComponents(String fieldName,
 					Reader reader) {
+
 				Tokenizer tokenizer = tokenizerFactory == null ? new WhitespaceTokenizer(
 						Lucene.ANALYZER_VERSION, reader) : tokenizerFactory
 						.create(reader);
@@ -183,7 +184,7 @@ public class HeatSynonymTokenFilterFactory extends AbstractTokenFilterFactory {
 	@Override
 	public TokenStream create(TokenStream tokenStream) {
 		// fst is null means no synonyms
-		//System.out.println("HeatSynonymFilter create");
+		// System.out.println("HeatSynonymFilter create");
 		HeatSynonymFilter heatSynonymFilter = new HeatSynonymFilter(
 				tokenStream, synonymMap, ignoreCase);
 		heatSynonymFilterAll.add(heatSynonymFilter);
@@ -208,7 +209,8 @@ public class HeatSynonymTokenFilterFactory extends AbstractTokenFilterFactory {
 		@Override
 		public void run() {
 			try {
-				//System.out.println("FileMonitor start................................."+ lastModified);
+				// System.out.println("FileMonitor start................................."+
+				// lastModified);
 				if (watchFile()) {
 					Reader rulesReader = createReader();
 					lastModified = getLastModifiedByUrl();
