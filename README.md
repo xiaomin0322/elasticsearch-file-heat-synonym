@@ -38,4 +38,5 @@ bin/plugin -install analysis-file-heat-synonym  -url https://github.com/xiaomin0
     | analysis file heat synonym   | Elasticsearch    |
     ------------------------------------------------------
     | 0.3.0                        | 1.1.0 -> master  |
+    | 0.4.0                        | 1.X.X-> master   |
     ------------------------------------------------------
