@@ -28,7 +28,7 @@ Example:
 ## Installation
 Using the plugin command (inside your elasticsearch/bin directory) the plugin can be installed by:
 
-bin/plugin -install analysis-file-heat-synonym  -url https://github.com/xiaomin0322/project/releases/download/1.0/elasticsearch-file-heat-synonym-0.2.0.zip
+bin/plugin -install analysis-file-heat-synonym  -url https://github.com/xiaomin0322/elasticsearch-file-heat-synonym/releases/download/1.1/elasticsearch-file-heat-synonym-0.3.0.zip
 
 ### Compatibility
 
@@ -37,5 +37,5 @@ bin/plugin -install analysis-file-heat-synonym  -url https://github.com/xiaomin0
     ------------------------------------------------------
     | analysis file heat synonym   | Elasticsearch    |
     ------------------------------------------------------
-    | 0.2.0                        | 1.1.0 -> master  |
+    | 0.3.0                        | 1.1.0 -> master  |
     ------------------------------------------------------
